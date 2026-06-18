@@ -125,15 +125,19 @@ class AuthController
         require __DIR__ . '/../Views/dashboard/index.php';
     }
 
-    /*public function logout(): void
+    public function logout(): void
     {
-        // Remove os dados armazenados na sessão.
+        //Garante que a sessão está ativa
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        //Limpa absolutamente todos os dados da sessão na memória
         $_SESSION = [];
 
-        // Remove o cookie da sessão, caso esteja sendo utilizado.
+        //Deleta o cookie antigo no navegador do usuário
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
-
             setcookie(
                 session_name(),
                 '',
@@ -145,33 +149,14 @@ class AuthController
             );
         }
 
-        // Encerra a sessão atual.
-        session_destroy();
+        // Gera um ID de sessão totalmente novo e apaga o antigo no servidor
+        // Isso invalida a sessão anterior por segurança, mas mantém o "canal" aberto para a mensagem
+        session_regenerate_id(true);
 
-        // Inicia nova sessão apenas para enviar a mensagem de retorno.
-        session_start();
-
-        // Mensagem exibida após o logout.
+        // Define a mensagem com segurança na nova sessão limpa
         $_SESSION['mensagem'] = 'Sessão encerrada com sucesso.';
 
-        // Retorna para a tela de login.
-        header('Location: ?controller=auth&action=login');
-        exit;
-    } */
-   public function logout(): void
-    {
-        // Garante que a sessão está ativa antes de manipulá-la
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        // Remove apenas os dados do usuário logado da sessão
-        unset($_SESSION['usuario']);
-
-        // Define a mensagem de sucesso que será exibida na tela de login
-        $_SESSION['mensagem'] = 'Sessão encerrada com sucesso.';
-
-        // Retorna para a tela de login.
+        // Redireciona o usuário
         header('Location: ?controller=auth&action=login');
         exit;
     }
