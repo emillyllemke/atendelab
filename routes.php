@@ -46,7 +46,7 @@ switch ($controller) {
             case 'buscarPorId': $usuariosController->buscarPorId(); break;
             case 'criar': $usuariosController->criar(); break;
             case 'atualizar': $usuariosController->atualizar(); break;
-            case 'excluir': $usuariosController->excluir(); break;
+            case 'inativar': $usuariosController->inativar(); break;
             default: 
                 http_response_code(404);
                 echo 'Acao de usuarios nao encontrada.'; 
@@ -64,7 +64,7 @@ switch ($controller) {
             case 'buscar': $pessoasController->buscarPorId(); break;
             case 'criar': $pessoasController->criar(); break;
             case 'atualizar': $pessoasController->atualizar(); break;
-            case 'excluir': $pessoasController->excluir(); break;
+            case 'inativar': $pessoasController->inativar(); break;
             default: 
                 http_response_code(404);
                 echo 'Acao de pessoas nao encontrada.'; 
@@ -82,7 +82,7 @@ switch ($controller) {
             case 'buscar': $tiposController->buscarPorId(); break;
             case 'criar': $tiposController->criar(); break;
             case 'atualizar': $tiposController->atualizar(); break;
-            case 'excluir': $tiposController->excluir(); break;
+            case 'inativar': $tiposController->inativar(); break;
             default: 
                 http_response_code(404);
                 echo 'Acao de tipos de atendimento nao encontrada.'; 
@@ -100,7 +100,6 @@ switch ($controller) {
             case 'visualizar': $atendimentosController->visualizar(); break;
             case 'criar': $atendimentosController->criar(); break;
             case 'atualizar_status': $atendimentosController->atualizarStatus(); break;
-            case 'excluir': $atendimentosController->excluir(); break;
             default: 
                 http_response_code(404);
                 echo 'Acao de atendimentos nao encontrada.'; 

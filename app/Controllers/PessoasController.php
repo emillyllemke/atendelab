@@ -12,8 +12,7 @@ class PessoasController
     public function listar(): void
     {
         header('Content-Type: application/json; charset=utf-8');
-
-        $sql = 'SELECT id, nome, documento, telefone, email, curso, periodo, observacoes status FROM pessoas ORDER BY id DESC';
+        $sql = 'SELECT id, nome, documento, telefone, email, curso, periodo, observacoes, status FROM pessoas ORDER BY id DESC';
         $stmt = $this->pdo->query($sql);
         $pessoas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -60,9 +59,9 @@ class PessoasController
         $email = trim($_POST['email'] ?? '');
         $observacoes = trim($_POST['observacoes'] ?? '');
 
-        if ($nome === '' || $documento === '' || $telefone === '' || $email === '' || $curso === '' || $periodo === '') {
+        if ($nome === '' || $documento === '' || $email === '') {
             http_response_code(400);
-            echo json_encode(['erro' => 'Os campos principais e o e-mail são obrigatórios.']);
+            echo json_encode(['erro' => 'Os campos nome, documento e e-mail são obrigatórios.']);
             return;
         }
 
@@ -73,10 +72,10 @@ class PessoasController
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
             $stmt->bindValue(':documento', $documento);
-            $stmt->bindValue(':telefone', $telefone);
             $stmt->bindValue(':email', $email);
-            $stmt->bindValue(':curso', $curso);
-            $stmt->bindValue(':periodo', $periodo);
+            $stmt->bindValue(':telefone', $telefone !== '' ? $telefone : null);
+            $stmt->bindValue(':curso', $curso !== '' ? $curso : null);
+            $stmt->bindValue(':periodo', $periodo !== '' ? $periodo : null);
             $stmt->bindValue(':observacoes', $observacoes !== '' ? $observacoes : null);
             $stmt->bindValue(':status', $status);
             $stmt->execute();
@@ -106,9 +105,9 @@ class PessoasController
         $email = trim($_POST['email'] ?? '');
         $observacoes = trim($_POST['observacoes'] ?? '');
 
-        if (!$id || $nome === '' || $documento === '' || $telefone === '' || $curso === '' || $periodo === '') {
+       if (!$id || $nome === '' || $documento === '' || $email === '') {
             http_response_code(400);
-            echo json_encode(['erro' => 'Os campos id, nome, documento, telefone, curso e periodo são obrigatórios.']);
+            echo json_encode(['erro' => 'Os campos id, nome, documento e e-mail são obrigatórios.']);
             return;
         }
 
@@ -120,10 +119,10 @@ class PessoasController
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
             $stmt->bindValue(':documento', $documento);
-            $stmt->bindValue(':telefone', $telefone);
             $stmt->bindValue(':email', $email);
-            $stmt->bindValue(':curso', $curso);
-            $stmt->bindValue(':periodo', $periodo);
+            $stmt->bindValue(':telefone', $telefone !== '' ? $telefone : null);
+            $stmt->bindValue(':curso', $curso !== '' ? $curso : null);
+            $stmt->bindValue(':periodo', $periodo !== '' ? $periodo : null);
             $stmt->bindValue(':observacoes', $observacoes !== '' ? $observacoes : null);
             $stmt->bindValue(':status', $status);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -136,7 +135,7 @@ class PessoasController
         }
     }
 
-    public function excluir(): void
+    public function inativar(): void
     {
         header('Content-Type: application/json; charset=utf-8');
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -148,16 +147,15 @@ class PessoasController
         }
 
         try {
-            $sql = 'DELETE FROM pessoas WHERE id = :id';
+            $sql = "UPDATE pessoas SET status = 'inativo' WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
-            echo json_encode(['mensagem' => 'Pessoa excluída com sucesso.'], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['mensagem' => 'Pessoa inativada com sucesso.'], JSON_UNESCAPED_UNICODE);
         } catch (PDOException $e) {
             http_response_code(500);
-            // O erro mais comum aqui é tentar apagar uma pessoa que já tem atendimentos registrados
-            echo json_encode(['erro' => 'Erro ao excluir pessoa. Verifique se existem atendimentos associados a ela.']);
+            echo json_encode(['erro' => 'Erro ao inativar pessoa.']);
         }
     }
 }

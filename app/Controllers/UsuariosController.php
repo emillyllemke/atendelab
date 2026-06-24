@@ -149,7 +149,7 @@ class UsuariosController
             return;
         }
 
-        if (!in_array($perfil, ['admin', 'aluno', 'atendente'], true)) {
+        if (!in_array($perfil, ['admin', 'atendente'], true)) {
             http_response_code(400);
             echo json_encode(['erro' => 'Perfil inválido.']);
             return;
@@ -185,11 +185,9 @@ class UsuariosController
         }
     }
 
-    public function excluir(): void
+    public function inativar(): void
     {
         header('Content-Type: application/json; charset=utf-8');
-
-        // Exclusão por ID recebido no corpo da requisição.
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 
         if (!$id) {
@@ -199,15 +197,15 @@ class UsuariosController
         }
 
         try {
-            $sql = 'DELETE FROM usuarios WHERE id = :id';
+            $sql = "UPDATE usuarios SET status = 'inativo' WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
-            echo json_encode(['mensagem' => 'Usuário excluído com sucesso.'], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['mensagem' => 'Usuário inativado com sucesso.'], JSON_UNESCAPED_UNICODE);
         } catch (PDOException $e) {
             http_response_code(500);
-            echo json_encode(['erro' => 'Erro ao excluir usuário.']);
+            echo json_encode(['erro' => 'Erro ao inativar usuário.']);
         }
     }
 }

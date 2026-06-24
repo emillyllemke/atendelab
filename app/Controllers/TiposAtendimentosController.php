@@ -65,7 +65,7 @@ class TiposAtendimentosController
             $sql = 'INSERT INTO tipos_atendimentos (nome, descricao, status) VALUES (:nome, :descricao, :status)';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
-            $stmt->bindValue(':descricao', $descricao);
+            $stmt->bindValue(':descricao', $descricao !== '' ? $descricao : null);
             $stmt->bindValue(':status', $status);
             $stmt->execute();
 
@@ -79,27 +79,27 @@ class TiposAtendimentosController
             echo json_encode(['erro' => 'Erro ao registrar tipo de atendimento.']);
         }
     }
-public function atualizar(): void
-    {
-        header('Content-Type: application/json; charset=utf-8');
+    public function atualizar(): void
+        {
+            header('Content-Type: application/json; charset=utf-8');
 
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $nome = trim($_POST['nome'] ?? '');
-        $descricao = trim($_POST['descricao'] ?? '');
-        
-        $status = $_POST['status'] ?? 'ATIVO';
+            $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+            $nome = trim($_POST['nome'] ?? '');
+            $descricao = trim($_POST['descricao'] ?? '');
+            $status = $_POST['status'] ?? 'ativo';
 
-        if (!$id || $nome === '') {
-        http_response_code(400);
-        echo json_encode(['erro' => 'Os campos ID e nome são obrigatórios.']);
-        return;
-        }
+            if (!$id || $nome === '') {
+                http_response_code(400);
+                echo json_encode(['erro' => 'Os campos ID e nome são obrigatórios.']);
+                return;
+            }
 
         try {
             $sql = 'UPDATE tipos_atendimentos SET nome = :nome, descricao = :descricao, status = :status WHERE id = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
-            $stmt->bindValue(':descricao', $descricao);
+            // Salva como NULL se vier vazio
+            $stmt->bindValue(':descricao', $descricao !== '' ? $descricao : null);
             $stmt->bindValue(':status', $status);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -110,7 +110,7 @@ public function atualizar(): void
             echo json_encode(['erro' => 'Erro ao atualizar tipo de atendimento.']);
         }
     }
-    public function excluir(): void
+    public function inativar(): void
     {
         header('Content-Type: application/json; charset=utf-8');
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -122,15 +122,15 @@ public function atualizar(): void
         }
 
         try {
-            $sql = 'DELETE FROM tipos_atendimentos WHERE id = :id';
+            $sql = "UPDATE tipos_atendimentos SET status = 'inativo' WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
-            echo json_encode(['mensagem' => 'Tipo de atendimento excluído com sucesso.'], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['mensagem' => 'Tipo de atendimento inativado com sucesso.'], JSON_UNESCAPED_UNICODE);
         } catch (PDOException $e) {
             http_response_code(500);
-            echo json_encode(['erro' => 'Erro ao excluir tipo de atendimento. Pode estar a ser usado nalgum atendimento.']);
+            echo json_encode(['erro' => 'Erro ao inativar tipo de atendimento.']);
         }
     }
 }

@@ -78,9 +78,9 @@ class AtendimentosController
         $observacao_final = trim($_POST['observacao_final'] ?? '');
         $status = $_POST['status'] ?? 'aberto';
 
-        if (!$pessoa_id || !$tipo_atendimento_id || !$usuario_id || $data_atendimento === '' || $horario_atendimento === '') {
+        if (!$pessoa_id || !$tipo_atendimento_id || !$usuario_id || $data_atendimento === '' || $horario_atendimento === '' || $descricao === '') {
             http_response_code(400);
-            echo json_encode(['erro' => 'Dados obrigatórios em falta.']);
+            echo json_encode(['erro' => 'Todos os dados obrigatórios, incluindo a descrição, devem ser preenchidos.']);
             return;
         }
 
@@ -136,30 +136,6 @@ class AtendimentosController
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['erro' => 'Erro ao atualizar o status.']);
-        }
-    }
-
-    public function excluir(): void
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-
-        if (!$id) {
-            http_response_code(400);
-            echo json_encode(['erro' => 'ID inválido.']);
-            return;
-        }
-
-        try {
-            $sql = 'DELETE FROM atendimentos WHERE id = :id';
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            echo json_encode(['mensagem' => 'Atendimento excluído com sucesso.'], JSON_UNESCAPED_UNICODE);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['erro' => 'Erro ao excluir o atendimento.']);
         }
     }
 }
