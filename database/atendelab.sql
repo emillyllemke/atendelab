@@ -1,42 +1,52 @@
+USE atendelab;
 CREATE TABLE usuarios (
- id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
- nome VARCHAR(100) NOT NULL,
- email VARCHAR(100) NOT NULL UNIQUE,
- senha VARCHAR(255) NOT NULL,
- perfil ENUM('admin', 'aluno', 'atendente') DEFAULT 'atendente';
- status ENUM('ativo', 'inativo') DEFAULT 'ativo',
- criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    perfil ENUM('admin', 'atendente') DEFAULT 'atendente',
+    status ENUM('ativo', 'inativo') DEFAULT 'ativo',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE pessoas (
-    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    nome VARCHAR(100) NOT NULL,
-    documento VARCHAR(20) UNIQUE NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    curso VARCHAR(100) NOT NULL,
-    periodo VARCHAR(100) NOT NULL,
-    status VARCHAR(100) NOT NULL
-);    
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    documento VARCHAR(30) NOT NULL UNIQUE,
+    telefone VARCHAR(20),
+    email VARCHAR(150) NOT NULL,
+    curso VARCHAR(120),
+    periodo VARCHAR(20),
+    observacoes TEXT,
+    status ENUM('ativo', 'inativo') DEFAULT 'ativo',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-CREATE TABLE tipo_atendimento (
-    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+CREATE TABLE tipos_atendimentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     descricao TEXT,
-    status ENUM ('ATIVO', 'INATIVO') DEFAULT 'ATIVO' 
+    status ENUM('ativo', 'inativo') DEFAULT 'ativo',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-    
+
 CREATE TABLE atendimentos (
-id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-pessoa_id INT NOT NULL,
-tipo_atendimento INT NOT NULL,
-usuario_id INT NOT NULL,
-data_atendimento DATE NOT NULL,
-hora_atendimento TIME NOT NULL,
-descricao TEXT,
-observacao TEXT,
-status ENUM ('PENDENTE', 'EM ANDAMENTO', 'CONCLUIDO', 'CANCELADO') DEFAULT 'PENDENTE',
-criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY(pessoa_id) REFERENCES pessoas(id),
-FOREIGN KEY (tipo_atendimento) REFERENCES tipo_atendimento(id),
-FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
-)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pessoa_id INT NOT NULL,
+    tipo_atendimento_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    descricao TEXT NOT NULL,
+    status ENUM('aberto', 'em_andamento', 'concluido') DEFAULT 'aberto',
+    data_atendimento DATE NOT NULL,
+    horario_atendimento TIME NOT NULL,
+    observacao_final TEXT,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_atendimentos_pessoa FOREIGN KEY (pessoa_id) REFERENCES pessoas(id),
+    CONSTRAINT fk_atendimentos_tipo FOREIGN KEY (tipo_atendimento_id) REFERENCES tipos_atendimentos(id),
+    CONSTRAINT fk_atendimentos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
