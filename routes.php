@@ -3,11 +3,10 @@
 // 1. Carrega todos os middlewares e controllers
 require_once __DIR__ . '/app/Middleware/auth.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
-require_once __DIR__ . '/app/Controllers/UsuarioController.php';
+require_once __DIR__ . '/app/Controllers/UsuariosController.php';
 require_once __DIR__ . '/app/Controllers/PessoasController.php';
 require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
 require_once __DIR__ . '/app/Controllers/AtendimentosController.php';
-
 // Define controller e action por query string. 
 $controller = $_GET['controller'] ?? 'auth';
 $action = $_GET['action'] ?? 'login';
@@ -57,6 +56,7 @@ switch ($controller) {
 
     // --- MÓDULO DE PESSOAS ---
     case 'pessoas':
+        exigirAutenticacao(); 
         $pessoasController = new PessoasController();
 
         switch ($action) {
@@ -74,6 +74,7 @@ switch ($controller) {
 
     // --- MÓDULO DE TIPOS DE ATENDIMENTO ---
     case 'tipos_atendimento':
+        exigirAutenticacao(); 
         $tiposController = new TiposAtendimentosController();
 
         switch ($action) {
@@ -91,6 +92,7 @@ switch ($controller) {
 
     // --- MÓDULO DE ATENDIMENTOS ---
     case 'atendimentos':
+        exigirAutenticacao(); 
         $atendimentosController = new AtendimentosController();
 
         switch ($action) {
@@ -106,7 +108,7 @@ switch ($controller) {
         }
         break;
 
-    // --- RESPOSTA PARA ROTA HOME (Se quiser manter fora do auth) ---
+    // --- RESPOSTA PARA ROTA HOME ---
     case 'home':
         echo '<h1>AtendeLab</h1>';
         echo '<p>Projeto em execução. Controladores disponíveis: auth, usuarios, pessoas, tipos_atendimento, atendimentos.</p>';

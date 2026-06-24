@@ -13,7 +13,7 @@ class TiposAtendimentosController
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $sql = 'SELECT id, nome, descricao, status FROM tipo_atendimento ORDER BY id DESC';
+        $sql = 'SELECT id, nome, descricao, status FROM tipos_atendimentos ORDER BY id DESC';
         $stmt = $this->pdo->query($sql);
         $tipos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -31,7 +31,7 @@ class TiposAtendimentosController
             return;
         }
 
-        $sql = 'SELECT id, nome, descricao, status FROM tipo_atendimento WHERE id = :id';
+        $sql = 'SELECT id, nome, descricao, status FROM tipos_atendimentos WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -53,7 +53,7 @@ class TiposAtendimentosController
 
         $nome = trim($_POST['nome'] ?? '');
         $descricao = trim($_POST['descricao'] ?? '');
-        $status = $_POST['status'] ?? 'ATIVO';
+        $status = $_POST['status'] ?? 'ativo';
 
         if ($nome === '') {
             http_response_code(400);
@@ -62,7 +62,7 @@ class TiposAtendimentosController
         }
 
         try {
-            $sql = 'INSERT INTO tipo_atendimento (nome, descricao, status) VALUES (:nome, :descricao, :status)';
+            $sql = 'INSERT INTO tipos_atendimentos (nome, descricao, status) VALUES (:nome, :descricao, :status)';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
             $stmt->bindValue(':descricao', $descricao);
@@ -89,14 +89,14 @@ public function atualizar(): void
         
         $status = $_POST['status'] ?? 'ATIVO';
 
-        if (!$id || $nome === '' || $descricao === '') {
-            http_response_code(400);
-            echo json_encode(['erro' => 'Os campos ID, nome e descrição são obrigatórios.']);
-            return;
+        if (!$id || $nome === '') {
+        http_response_code(400);
+        echo json_encode(['erro' => 'Os campos ID e nome são obrigatórios.']);
+        return;
         }
 
         try {
-            $sql = 'UPDATE tipo_atendimento SET nome = :nome, descricao = :descricao, status = :status WHERE id = :id';
+            $sql = 'UPDATE tipos_atendimentos SET nome = :nome, descricao = :descricao, status = :status WHERE id = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
             $stmt->bindValue(':descricao', $descricao);
@@ -122,7 +122,7 @@ public function atualizar(): void
         }
 
         try {
-            $sql = 'DELETE FROM tipo_atendimento WHERE id = :id';
+            $sql = 'DELETE FROM tipos_atendimentos WHERE id = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();

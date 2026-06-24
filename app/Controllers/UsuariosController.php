@@ -88,11 +88,11 @@ class UsuariosController
         }
 
         // Whitelist de valores válidos para campos de domínio.
-        if (!in_array($perfil, ['admin', 'aluno', 'atendente'], true)) {
-            http_response_code(400);
-            echo json_encode(['erro' => 'Perfil inválido.']);
-            return;
-        }
+        if (!in_array($perfil, ['admin', 'atendente'], true)) {
+        http_response_code(400);
+        echo json_encode(['erro' => 'Perfil inválido.']);
+        return;
+    }
 
         if (!in_array($status, ['ativo', 'inativo'], true)) {
             http_response_code(400);
@@ -121,7 +121,6 @@ class UsuariosController
                 'id' => $this->pdo->lastInsertId()
             ], JSON_UNESCAPED_UNICODE);
         } catch (PDOException $e) {
-            // Em produção, registre $e em log em vez de expor detalhes.
             http_response_code(500);
             echo json_encode(['erro' => 'Erro ao cadastrar usuário.']);
         }
