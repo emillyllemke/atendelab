@@ -92,20 +92,58 @@ switch ($controller) {
 
     // --- MÓDULO DE ATENDIMENTOS ---
     case 'atendimentos':
-        exigirAutenticacao(); 
+        exigirAutenticacao();
+        require_once __DIR__
+            . '/app/Controllers/AtendimentosController.php';
         $atendimentosController = new AtendimentosController();
-
         switch ($action) {
-            case 'listar': $atendimentosController->listar(); break;
-            case 'visualizar': $atendimentosController->visualizar(); break;
-            case 'criar': $atendimentosController->criar(); break;
-            case 'atualizar_status': $atendimentosController->atualizarStatus(); break;
-            default: 
-                http_response_code(404);
-                echo 'Acao de atendimentos nao encontrada.'; 
+            case 'listar':
+                $atendimentosController->listar();
                 break;
+            case 'visualizar':
+                $atendimentosController->visualizar();
+                break;
+            case 'criar':
+                $atendimentosController->criar();
+                break;
+            case 'alterarStatus':
+            case 'atualizarStatus':
+                $atendimentosController->atualizarStatus();
+                break;
+            case 'opcoesFormulario':
+                $atendimentosController->opcoesFormulario();
+                break;
+            default:
+                responderRotaNaoEncontrada(
+                    'Ação de atendimentos não encontrada.'
+                );
         }
-        break;
+    break;
+
+    case 'tipos':
+        exigirAutenticacao();
+        require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
+        $tiposController = new TiposAtendimentosController();
+            switch ($action) {
+                case 'listar':
+                    $tiposController->listar();
+                    break;
+                case 'buscarPorId':
+                    $tiposController->buscarPorId();
+                    break;
+                case 'criar':
+                    $tiposController->criar();
+                    break;
+                case 'atualizar':
+                    $tiposController->atualizar();
+                    break;
+                case 'inativar':
+                    $tiposController->inativar();
+                    break;
+                default:
+                    responderRotaNaoEncontrada('Ação de tipos de atendimento não encontrada.');
+            }
+    break;
 
     // --- RESPOSTA PARA ROTA HOME ---
     case 'home':

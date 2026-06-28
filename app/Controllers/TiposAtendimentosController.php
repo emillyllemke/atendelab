@@ -98,7 +98,6 @@ class TiposAtendimentosController
             $sql = 'UPDATE tipos_atendimentos SET nome = :nome, descricao = :descricao, status = :status WHERE id = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':nome', $nome);
-            // Salva como NULL se vier vazio
             $stmt->bindValue(':descricao', $descricao !== '' ? $descricao : null);
             $stmt->bindValue(':status', $status);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
