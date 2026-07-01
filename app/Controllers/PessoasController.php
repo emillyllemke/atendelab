@@ -30,7 +30,7 @@ class PessoasController
             return;
         }
 
-        $sql = 'SELECT id, nome, documento, telefone, curso, periodo, status FROM pessoas WHERE id = :id';
+        $sql = 'SELECT id, nome, documento, telefone, email, curso, periodo, status FROM pessoas WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();

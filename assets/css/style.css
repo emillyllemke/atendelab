@@ -1,5 +1,5 @@
 :root { 
-    --atendelab-green: #198754; 
+    --atendelab-green: #1c784d; 
 }
 body { 
     min-height: 100vh; 
@@ -17,6 +17,11 @@ body {
     color: white; 
     font-weight: 700; 
     letter-spacing: .04em; 
+}
+.brand-mark img {
+    width: 35px; 
+    height: auto; 
+    object-fit: contain; 
 }
 .card { 
     border-radius: 14px; 

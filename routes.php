@@ -1,18 +1,46 @@
 <?php
 
-// 1. Carrega todos os middlewares e controllers
 require_once __DIR__ . '/app/Middleware/auth.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/UsuariosController.php';
 require_once __DIR__ . '/app/Controllers/PessoasController.php';
 require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
 require_once __DIR__ . '/app/Controllers/AtendimentosController.php';
-// Define controller e action por query string. 
+require_once __DIR__ . '/app/Controllers/FrontendController.php';
+require_once __DIR__ . '/app/Controllers/DashboardController.php';
+
+function responderRotaNaoEncontrada(string $mensagem): void {
+    http_response_code(404);
+    echo json_encode(['erro' => $mensagem], JSON_UNESCAPED_UNICODE);
+}
+
 $controller = $_GET['controller'] ?? 'auth';
 $action = $_GET['action'] ?? 'login';
 
 switch ($controller) {
-    
+    // --- MÓDULO FRONTEND ---
+    case 'frontend':
+        require_once __DIR__ . '/app/Controllers/FrontendController.php';
+        $frontendController = new FrontendController();
+
+        switch ($action) {
+            case 'pessoas': 
+                $frontendController->pessoas(); 
+                break;
+            case 'tipos':
+            case 'tiposAtendimentos': 
+                $frontendController->tiposAtendimentos(); 
+                break;
+            case 'atendimentos': 
+                $frontendController->atendimentos(); 
+                break;
+            default: 
+                http_response_code(404);
+                echo 'Acao frontend nao encontrada.'; 
+                break;
+        }
+        break;    
+
     // --- MÓDULO DE AUTENTICAÇÃO ---
     case 'auth':
         $authController = new AuthController();
@@ -60,11 +88,21 @@ switch ($controller) {
         $pessoasController = new PessoasController();
 
         switch ($action) {
-            case 'listar': $pessoasController->listar(); break;
-            case 'buscar': $pessoasController->buscarPorId(); break;
-            case 'criar': $pessoasController->criar(); break;
-            case 'atualizar': $pessoasController->atualizar(); break;
-            case 'inativar': $pessoasController->inativar(); break;
+            case 'listar': 
+                $pessoasController->listar(); 
+                break;
+            case 'buscar': 
+                $pessoasController->buscarPorId();
+                break;
+            case 'criar': 
+                $pessoasController->criar(); 
+                break;
+            case 'atualizar': 
+                $pessoasController->atualizar(); 
+                break;
+            case 'inativar': 
+                $pessoasController->inativar(); 
+                break;
             default: 
                 http_response_code(404);
                 echo 'Acao de pessoas nao encontrada.'; 
@@ -74,18 +112,29 @@ switch ($controller) {
 
     // --- MÓDULO DE TIPOS DE ATENDIMENTO ---
     case 'tipos_atendimento':
-        exigirAutenticacao(); 
+    case 'tipos': 
+        require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
         $tiposController = new TiposAtendimentosController();
 
         switch ($action) {
-            case 'listar': $tiposController->listar(); break;
-            case 'buscar': $tiposController->buscarPorId(); break;
-            case 'criar': $tiposController->criar(); break;
-            case 'atualizar': $tiposController->atualizar(); break;
-            case 'inativar': $tiposController->inativar(); break;
-            default: 
-                http_response_code(404);
-                echo 'Acao de tipos de atendimento nao encontrada.'; 
+            case 'listar':
+                $tiposController->listar();
+                break;
+            case 'buscar':
+            case 'buscarPorId':
+                $tiposController->buscarPorId();
+                break;
+            case 'criar':
+                $tiposController->criar();
+                break;
+            case 'atualizar':
+                $tiposController->atualizar();
+                break;
+            case 'inativar':
+                $tiposController->inativar();
+                break;
+            default:
+                responderRotaNaoEncontrada('Ação de tipos de atendimento não encontrada.');
                 break;
         }
         break;
@@ -119,31 +168,21 @@ switch ($controller) {
                 );
         }
     break;
-
-    case 'tipos':
-        exigirAutenticacao();
-        require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
-        $tiposController = new TiposAtendimentosController();
-            switch ($action) {
-                case 'listar':
-                    $tiposController->listar();
-                    break;
-                case 'buscarPorId':
-                    $tiposController->buscarPorId();
-                    break;
-                case 'criar':
-                    $tiposController->criar();
-                    break;
-                case 'atualizar':
-                    $tiposController->atualizar();
-                    break;
-                case 'inativar':
-                    $tiposController->inativar();
-                    break;
-                default:
-                    responderRotaNaoEncontrada('Ação de tipos de atendimento não encontrada.');
-            }
-    break;
+    
+    // --- MÓDULO DASHBOARD ---
+    case 'dashboard':
+        $dashboardController = new DashboardController();
+        
+        switch ($action) {
+            case 'resumo': 
+                $dashboardController->resumo(); 
+                break;
+            default: 
+                http_response_code(404);
+                echo 'Acao do dashboard nao encontrada.'; 
+                break;
+        }
+        break;
 
     // --- RESPOSTA PARA ROTA HOME ---
     case 'home':

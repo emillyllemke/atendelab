@@ -68,17 +68,18 @@ class AtendimentosController
    public function criar(): void
     {
         header('Content-Type: application/json; charset=utf-8');
+        require_once __DIR__ . '/../Middleware/auth.php';
 
         $pessoa_id = filter_input(INPUT_POST, 'pessoa_id', FILTER_VALIDATE_INT);
         $tipo_atendimento_id = filter_input(INPUT_POST, 'tipo_atendimento_id', FILTER_VALIDATE_INT);
-        $usuario_id = filter_input(INPUT_POST, 'usuario_id', FILTER_VALIDATE_INT);
-        $data_atendimento = $_POST['data_atendimento'] ?? '';
-        $horario_atendimento = $_POST['horario_atendimento'] ?? '';
+        $usuario_id = $_SESSION['usuario']['id'] ?? null;
+        $data_atendimento = date('Y-m-d');
+        $horario_atendimento = date('H:i:s');
         $descricao = trim($_POST['descricao'] ?? '');
         $observacao_final = trim($_POST['observacao_final'] ?? '');
         $status = $_POST['status'] ?? 'aberto';
 
-        if (!$pessoa_id || !$tipo_atendimento_id || !$usuario_id || $data_atendimento === '' || $horario_atendimento === '' || $descricao === '') {
+        if (!$pessoa_id || !$tipo_atendimento_id || !$usuario_id || $descricao === '') {
             http_response_code(400);
             echo json_encode(['erro' => 'Todos os dados obrigatórios, incluindo a descrição, devem ser preenchidos.']);
             return;
@@ -136,6 +137,23 @@ class AtendimentosController
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['erro' => 'Erro ao atualizar o status.']);
+        }
+    }
+
+    public function opcoesFormulario(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        try {
+            $stmtPessoas = $this->pdo->query("SELECT id, nome FROM pessoas WHERE status = 'ativo' ORDER BY nome ASC");
+            $pessoas = $stmtPessoas->fetchAll(PDO::FETCH_ASSOC);
+
+            $stmtTipos = $this->pdo->query("SELECT id, nome FROM tipos_atendimentos WHERE status = 'ativo' ORDER BY nome ASC");
+            $tipos = $stmtTipos->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(['pessoas' => $pessoas, 'tipos' => $tipos], JSON_UNESCAPED_UNICODE);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['erro' => 'Erro ao buscar opções do formulário.']);
         }
     }
 }

@@ -2,7 +2,7 @@
 $host = 'localhost';
 $dbname = 'atendelab';
 $user = 'root';
-$porta = '3306';
+$porta = '3307';
 $password = '';
 try {
  $pdo = new PDO(

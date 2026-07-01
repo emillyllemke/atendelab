@@ -65,4 +65,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await AtendeLabApi.get('dashboard', 'resumo');
+        const totais = response.indicadores;
+        document.getElementById('totalPessoas').textContent = totais.total_pessoas ?? 0;
+        document.getElementById('totalTipos').textContent = totais.total_tipos ?? 0;
+        document.getElementById('totalAtendimentos').textContent = totais.total_atendimentos ?? 0;
+        
+    } catch (error) {
+        document.getElementById('totalPessoas').textContent = '!';
+        document.getElementById('totalTipos').textContent = '!';
+        document.getElementById('totalAtendimentos').textContent = '!';
+        console.error(error);
+    }
+});
+</script>
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

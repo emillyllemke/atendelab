@@ -77,7 +77,6 @@ require __DIR__ . '/../layouts/header.php';
                             <option value="aberto">Aberto</option>
                             <option value="em_andamento">Em Andamento</option>
                             <option value="concluido">Concluído</option>
-                            <option value="cancelado">Cancelado</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -154,12 +153,15 @@ async function carregarAtendimentos() {
             if (a.status === 'aberto') badgeClass = 'text-bg-warning';
             else if (a.status === 'em_andamento') badgeClass = 'text-bg-primary';
             else if (a.status === 'concluido') badgeClass = 'text-bg-success';
-            else if (a.status === 'cancelado') badgeClass = 'text-bg-danger';
+
+            const partesData = a.data_atendimento.split('-');
+            const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+            const horarioFormatado = a.horario_atendimento.substring(0, 5);
 
             return `<tr>
-                <td>${AtendeLabApi.escape(a.criado_em || '')}</td>
+                <td>${AtendeLabApi.escape(dataFormatada + ' às ' + horarioFormatado)}</td>
                 <td>${AtendeLabApi.escape(a.pessoa_nome || '')}</td>
-                <td>${AtendeLabApi.escape(a.tipo_nome || '')}</td>
+                <td>${AtendeLabApi.escape(a.tipo_atendimento_nome || '')}</td>
                 <td><span class="badge ${badgeClass}">${AtendeLabApi.escape(a.status)}</span></td>
                 <td class="text-end">
                     <button class="btn btn-sm btn-outline-primary" onclick="abrirStatus(${Number(a.id)}, '${AtendeLabApi.escapeAttr(a.status)}')">Alterar Status</button>
