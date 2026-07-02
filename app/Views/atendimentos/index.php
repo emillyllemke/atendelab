@@ -81,7 +81,7 @@ require __DIR__ . '/../layouts/header.php';
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Observação Final</label>
-                        <textarea class="form-control" name="observacao_final" rows="3"></textarea>
+                        <textarea class="form-control" name="observacao_final" rows="3"placeholder="Obrigatória ao concluir"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

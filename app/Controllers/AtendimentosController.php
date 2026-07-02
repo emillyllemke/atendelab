@@ -117,26 +117,44 @@ class AtendimentosController
         header('Content-Type: application/json; charset=utf-8');
 
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $status = $_POST['status'] ?? '';
-        $statusValidos = ['aberto', 'em_andamento', 'concluido'];
+        $status = $_POST['status'] ?? null;
         
-        if (!$id || !in_array($status, $statusValidos)) {
-            http_response_code(400);
-            echo json_encode(['erro' => 'ID ou status inválido. Os status permitidos são: aberto, em_andamento, concluido.']);
+        $observacao_final = trim($_POST['observacao_final'] ?? '') ?: null;
+
+        if (!$id || empty($status)) {
+            http_response_code(422);
+            echo json_encode(['erro' => 'Os campos ID e Status são obrigatórios.']);
+            return;
+        }
+
+        if (!in_array($status, ['aberto', 'em_andamento', 'concluido'], true)) {
+            http_response_code(422);
+            echo json_encode(['erro' => 'Status do atendimento inválido.']);
+            return;
+        }
+
+        if ($status === 'concluido' && empty($observacao_final)) {
+            http_response_code(422);
+            echo json_encode(['erro' => 'Informe a observação final para concluir.']);
             return;
         }
 
         try {
-            $sql = 'UPDATE atendimentos SET status = :status WHERE id = :id';
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':status', $status);
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
+            $sql = 'UPDATE atendimentos
+                    SET status = :status,
+                        observacao_final = :observacao_final
+                    WHERE id = :id';
 
-            echo json_encode(['mensagem' => 'Status do atendimento atualizado com sucesso.'], JSON_UNESCAPED_UNICODE);
+            $stmt = $this->pdo->prepare($sql);
+            
+            $stmt->execute(compact('status', 'observacao_final', 'id'));
+
+            echo json_encode(['mensagem' => 'Status e observação do atendimento atualizados com sucesso.']);
+
         } catch (PDOException $e) {
+            error_log("Erro no AtendimentosController (AlterarStatus): " . $e->getMessage());
             http_response_code(500);
-            echo json_encode(['erro' => 'Erro ao atualizar o status.']);
+            echo json_encode(['erro' => 'Erro ao atualizar o status do atendimento.']);
         }
     }
 
